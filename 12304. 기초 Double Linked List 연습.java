@@ -29,25 +29,25 @@ public class UserSolution {
     }
 
     public void addNode2Head(int data) {
-        Node temp = getNode(data);
+        Node newNode = getNode(data);
         if (head != null) {
-            temp.next = head;
-            head.prev = temp;
+            newNode.next = head;
+            head.prev = newNode;
         }
-
-        head = temp;
+        head = newNode;
     }
 
     public void addNode2Tail(int data) {
         if (head == null) {
             head = getNode(data);
         } else {
-            Node temp = head;
-            while (temp.next != null) {
-                temp = temp.next;
+            Node prevNode = head;
+            while (prevNode.next != null) {
+                prevNode = prevNode.next;
             }
-            temp.next = getNode(data);
-            temp.next.prev = temp;
+            Node newNode = getNode(data);
+            newNode.prev = prevNode;
+            prevNode.next = newNode;
         }
     }
 
@@ -55,31 +55,31 @@ public class UserSolution {
         if (num == 1) {
             addNode2Head(data);
         } else {
-            Node temp = head;
+            Node prevNode = head;
             for (int i = 2; i < num; i++) {
-                temp = temp.next;
+                prevNode = prevNode.next;
             }
 
             Node newNode = getNode(data);
-            if (temp.next != null) {
-                temp.next.prev = newNode;
+            if (prevNode.next != null) {
+                prevNode.next.prev = newNode;
             }
-            newNode.prev = temp;
-            newNode.next = temp.next;
-            temp.next = newNode;
+            newNode.prev = prevNode;
+            newNode.next = prevNode.next;
+            prevNode.next = newNode;
         }
     }
 
     public int findNode(int data) {
-        Node temp = head;
+        Node targetNode = head;
         int index = 1;
 
-        if (temp.data == data) {
+        if (targetNode.data == data) {
             return index;
         }
 
-        while (temp.next != null && temp.next.data != data) {
-            temp = temp.next;
+        while (targetNode.next != null && targetNode.next.data != data) {
+            targetNode = targetNode.next;
             index++;
         }
 
@@ -87,19 +87,19 @@ public class UserSolution {
     }
 
     public void removeNode(int data) {
-        Node temp = head;
+        Node targetNode = head;
 
-        if (temp.data == data) {
-            head = temp.next;
+        if (head.data == data) {
+            head = head.next;
             return;
         }
 
-        while (temp.next != null && temp.next.data != data) {
-            temp = temp.next;
+        while (targetNode.next != null && targetNode.next.data != data) {
+            targetNode = targetNode.next;
         }
 
-        if (temp.next != null) {
-            temp.next = temp.next.next;
+        if (targetNode.next != null) {
+            targetNode.next = targetNode.next.next;
         }
     }
 
