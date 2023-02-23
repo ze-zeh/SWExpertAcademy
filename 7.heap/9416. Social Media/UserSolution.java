@@ -24,9 +24,7 @@ class UserSolution {
         posts = new HashMap<>();
         following = new boolean[N + 1][N + 1];
 
-        for (int i = 1; i <= N; i++) {
-            following[i][i] = true;
-        }
+        for (int i = 1; i <= N; i++) following[i][i] = true;
     }
 
     public void follow(int uID1, int uID2, int timestamp) {
@@ -43,30 +41,26 @@ class UserSolution {
 
     public void getFeed(int uID, int timestamp, int pIDList[]) {
         PriorityQueue<Post> pq1 = new PriorityQueue<>((o1, o2) -> {
-            if (o1.like == o2.like) {
-                return o2.timestamp - o1.timestamp;
-            }
+            if (o1.like == o2.like) return o2.timestamp - o1.timestamp;
             return o2.like - o1.like;
         });
 
         PriorityQueue<Post> pq2 = new PriorityQueue<>((o1, o2) -> o2.timestamp - o1.timestamp);
 
-        for (Post post : posts.values()) {
+        for (int i = posts.size(); i >= 1; i--) {
+            Post post = posts.get(i);
             if (following[uID][post.uID]) {
                 if (timestamp - 1000 <= post.timestamp) {
                     pq1.add(post);
                 } else {
                     pq2.add(post);
+                    if (pq1.size() + pq2.size() >= 10) break;
                 }
             }
         }
 
         int listSize = 0;
-        while (listSize < 10 && !pq1.isEmpty()) {
-            pIDList[listSize++] = pq1.poll().pID;
-        }
-        while (listSize < 10 && !pq2.isEmpty()) {
-            pIDList[listSize++] = pq2.poll().pID;
-        }
+        while (!pq1.isEmpty() && listSize < 10) pIDList[listSize++] = pq1.poll().pID;
+        while (!pq2.isEmpty() && listSize < 10) pIDList[listSize++] = pq2.poll().pID;
     }
 }
