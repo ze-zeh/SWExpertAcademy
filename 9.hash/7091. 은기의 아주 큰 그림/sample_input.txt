@@ -1,0 +1,22 @@
+2
+2 2 3 3
+oo
+oo
+ooo
+ooo
+ooo
+4 4 10 10
+oxxo
+xoox
+xoox
+oxxo
+xxxxxxoxxo
+oxxoooxoox
+xooxxxxoox
+xooxxxoxxo
+oxxoxxxxxx
+ooooxxxxxx
+xxxoxxoxxo
+oooxooxoox
+oooxooxoox
+xxxoxxoxxo
