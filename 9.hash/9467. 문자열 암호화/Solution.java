@@ -1,130 +1,100 @@
-public class UserSolution {
-    final int MAX = 20011;
+import java.util.Scanner;
 
-    static class Node {
-        int index;
-        Node next, prev;
+class Solution {
 
-        public Node(int data) {
-            this.index = data;
-        }
+    private static int mSeed = 5;
+
+    private static final int MAXL = 50005;
+    private static final int DUMMY_LEN = 5959;
+    private static int score = 0;
+    private static int total_score = 0;
+
+    private static Scanner sc;
+    private static UserSolution user = new UserSolution();
+
+    private static char dummy1[] = new char[DUMMY_LEN];
+    private static char init_string[] = new char[MAXL];
+    private static char dummy2[] = new char[DUMMY_LEN];
+    private static char result_string[] = new char[MAXL];
+    private static char dummy3[] = new char[DUMMY_LEN];
+    private static char user_ans_string[] = new char[MAXL];
+    private static char dummy4[] = new char[DUMMY_LEN];
+    private static char string_A[] = new char[4];
+    private static char string_B[] = new char[4];
+    private static int init_string_len = 0;
+    private static int char_type = 0;
+    private static int query_cnt = 0;
+
+    private static int pseudo_rand()
+    {
+        mSeed = mSeed * 214013 + 2531011;
+        return (mSeed >> 16) & 0x7FFF;
     }
 
-    Node[] table = new Node[MAX];
-    Node[] tails = new Node[MAX];
-    char[] str = new char[50000];
-    int n;
+    public static void main(String[] args) throws Exception {
+//		System.setIn(new java.io.FileInputStream("sample_input.txt"));
 
-    void add(int key, int index) {
-        Node cur = table[key];
-        Node tail = tails[key];
-        Node newNode = new Node(index);
+        sc = new Scanner(System.in);
 
-        while (cur.next != tail) {
-            if (cur.next.index > index) {
-                newNode.next = cur.next;
-                newNode.next.prev = newNode;
-                cur.next = newNode;
-                newNode.prev = cur;
-                return;
+        int T = sc.nextInt();
+        total_score = 0;
+        for (int TC = 1; TC <= T; TC++) {
+            score = 100;
+            mSeed = sc.nextInt();
+            init_string_len = sc.nextInt();
+            char_type = sc.nextInt();
+            query_cnt = sc.nextInt();
+
+            for (int i = 0; i < init_string_len; i++)
+            {
+                init_string[i] = (char)(pseudo_rand() % char_type + 'a');
             }
-            cur = cur.next;
-        }
+            init_string[init_string_len] = '\0';
 
-        newNode.next = tail;
-        tail.prev = newNode;
-        cur.next = newNode;
-        newNode.prev = cur;
-    }
+            user.init(init_string_len, init_string);
 
-    void remove(int key, int index) {
-        Node cur = table[key];
-        Node tail = tails[key];
+            string_A[3] = string_B[3] = '\0';
+            for (int i = 0; i < query_cnt; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    string_A[k] = (char) ((pseudo_rand() % char_type) + 'a');
+                    string_B[k] = (char) ((pseudo_rand() % char_type) + 'a');
+                }
+                int user_ans = user.change(string_A, string_B);
+                int ans = sc.nextInt();
 
-        while (cur.next != tail) {
-            cur = cur.next;
-
-            if (cur.index == index) {
-                cur.prev.next = cur.next;
-                cur.next.prev = cur.prev;
-                return;
+                if (ans != user_ans)
+                {
+                    score = 0;
+                }
             }
-        }
-    }
 
-    int getKey(char[] arr, int start) {
-        long hash = 5381L;
+            user.result(user_ans_string);
 
-        for (int i = start; i < start + 3; i++) {
-            hash = (((hash << 5) + hash) + arr[i]);
-        }
-        return (int) (((hash % MAX) + MAX) % MAX);
-    }
 
-    void init(int N, char[] init_String) {
-        n = N;
+            sc.nextLine();
+            String result_str_java = sc.nextLine();
+            result_string = result_str_java.toString().toCharArray();
 
-        for (int i = 0; i < MAX; i++) {
-            table[i] = new Node(-1);
-            tails[i] = new Node(-1);
-        }
-
-        for (int i = 0; i < MAX; i++) {
-            table[i].next = tails[i];
-            tails[i].prev = table[i];
-        }
-
-        for (int i = 0; i < N; i++) str[i] = init_String[i];
-
-        for (int i = 0; i <= N - 3; i++) add(getKey(str, i), i);
-    }
-
-    int change(char[] string_A, char[] string_B) {
-        int key = getKey(string_A, 0);
-        int count = 0;
-        int index;
-        Node cur = table[key];
-        Node tail = tails[key];
-
-        while (cur.next != tail) {
-            cur = cur.next;
-
-            boolean flag = false;
-            int curIndex = cur.index;
-            for (int i = 0; i < 3; i++) {
-                if (str[curIndex++] != string_A[i]) {
-                    flag = true;
+            for (int i = 0; i < init_string_len; i++)
+            {
+                if (result_string[i] != user_ans_string[i])
+                {
+                    score = 0;
                     break;
                 }
             }
 
-            if (flag) continue;
+            total_score += score;
+            System.out.println("#" + TC +" " + score);
 
-            count++;
-
-            index = cur.index;
-            cur = cur.prev;
-
-            for (int i = index - 2; i <= index + 2; i++) {
-                if (i < 0 || i > n - 3) continue;
-                remove(getKey(str, i), i);
-            }
-
-            curIndex = 0;
-            for (int i = index; i < index + 3; i++) str[i] = string_B[curIndex++];
-
-            for (int i = index - 2; i <= index + 2; i++) {
-                if (i < 0 || i > n - 3) continue;
-                add(getKey(str, i), i);
-            }
-
-            while (cur.next.index < index + 3 && cur.next != tail) cur = cur.next;
         }
-
-        return count;
+        System.out.println("Total score : " + total_score/T);
+        sc.close();
     }
 
-    void result(char[] ret) {
-        System.arraycopy(str, 0, ret, 0, str.length);
-    }
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
 }
